@@ -200,7 +200,7 @@ const PULL=[["“We will not negotiate under the shadow of a deadline.”","Prim
 FILL.splice(2,0,"p8");
 PULL.splice(2,0,["“Firing on unarmed villagers is a crime, not a border incident.”","Foreign Minister Elin Marek"]);
 const bar=document.getElementById("bar"),mount=document.getElementById("papers");
-let cur=0;
+let cur=PAPERS.length-1; // open on the latest edition
 const pick=(a,n)=>[...a].sort(()=>Math.random()-.5).slice(0,n);
 const fig=(i,c)=>i?`<figure><img src="img/${i}.jpg" alt=""><figcaption>${c}</figcaption></figure>`:"";
 
