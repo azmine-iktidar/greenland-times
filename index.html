@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Greenland Times</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f3ecdc;--ink:#1a1612;--rule:#1a1612;--muted:#5a5043;--accent:#8a1c1c}
+*{box-sizing:border-box}
+body{margin:0;background:#cfc6b2;color:var(--ink);font-family:"Libre Baskerville",Georgia,serif}
+.bar{position:sticky;top:0;z-index:5;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;padding:10px 16px;background:#1a1612}
+.bar button{font:500 13px Oswald,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border:1px solid #f3ecdc;background:transparent;color:#f3ecdc;cursor:pointer}
+.bar button.on{background:#f3ecdc;color:#1a1612}
+.bar .gen{background:var(--accent);border-color:var(--accent)}
+.sheet{max-width:1100px;margin:20px auto;padding:28px 36px 36px;background:var(--paper);box-shadow:0 6px 30px rgba(0,0,0,.35)}
+.mast{text-align:center;border-bottom:4px double var(--rule);padding-bottom:10px}
+.mast h1{font:700 clamp(44px,9vw,92px)/1 UnifrakturCook,serif;margin:0;letter-spacing:.01em}
+.dateline{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:6px 2px;margin-top:8px;font:500 12px Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.lead{display:grid;grid-template-columns:1.6fr 1fr;gap:24px;padding:18px 0;border-bottom:2px solid var(--rule)}
+.kicker{font:700 12px Oswald,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+.lead h2{font:700 clamp(30px,4.6vw,50px)/1.05 "Libre Baskerville",serif;margin:0 0 8px}
+.deck{font-style:italic;color:var(--muted);margin:0 0 10px;font-size:16px;line-height:1.4}
+figure{margin:0}
+figure img{width:100%;display:block;filter:grayscale(.85) contrast(1.05) sepia(.15)}
+figcaption{font-size:11px;color:var(--muted);padding:4px 0;border-bottom:1px solid #b8ad96;line-height:1.35}
+.by{font:500 11px Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.body p{margin:0 0 10px;font-size:14px;line-height:1.55;text-align:justify;hyphens:auto}
+.by+p::first-letter{font:700 52px/.8 "Libre Baskerville",serif;float:left;padding:4px 6px 0 0}
+.cols{column-count:3;column-gap:28px;column-rule:1px solid #b8ad96;padding-top:16px}
+.story{margin-bottom:20px}.story figure{break-inside:avoid}.story h3,.story .kicker{break-after:avoid}
+.story h3{font:700 20px/1.15 "Libre Baskerville",serif;margin:0 0 6px}
+.story p{margin:0;font-size:13px;line-height:1.5;text-align:justify}
+.story figure{margin-bottom:8px}
+.box{break-inside:avoid;border:1px solid var(--rule);padding:10px 12px;margin:0 0 20px;background:rgba(0,0,0,.035);font-size:12.5px;line-height:1.45}
+.box h4{font:700 12px Oswald,sans-serif;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px;border-bottom:1px solid var(--rule);padding-bottom:3px}
+.box p{margin:0 0 6px}.box ul{margin:0;padding-left:16px}
+.lead aside{display:flex;flex-direction:column}.fill{flex:1 1 0;min-height:0;position:relative;overflow:hidden;margin-top:6px}.fill img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.cols .box{break-inside:auto}
+.pull{font:italic 700 22px/1.25 "Libre Baskerville",serif;border-top:3px solid var(--rule);border-bottom:1px solid var(--rule);padding:10px 2px;margin:16px 0}
+.pull small{display:block;font:500 11px Oswald,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-style:normal}
+.brief{border-top:2px solid var(--rule);padding-top:10px;margin-top:4px;font-size:12.5px;line-height:1.5}
+.brief b{font:700 12px Oswald,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin-right:6px}
+.foot{margin-top:14px;border-top:4px double var(--rule);padding-top:6px;text-align:center;font:500 11px Oswald,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+@media(max-width:800px){.sheet{padding:16px;margin:0}.lead{grid-template-columns:1fr}.cols{column-count:1}}
+@media print{body{background:#fff}.bar{display:none}.sheet{box-shadow:none;margin:0;max-width:none}.sheet+.sheet{break-before:page}body.single .sheet{display:none}body.single .sheet.cur{display:block}}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div id="papers"></div>
+<script>
+// ponytail: all content is inline data; add stories to the pools, no build step
+const PAPERS=[
+{no:"Vol. CXII · No. 281",date:"Monday, 5 October 2026",weather:"Cold front over the north-east · Border passes open",
+ lead:[
+  {k:"Diplomacy",h:"WL Serves Ultimatum: Cede Habiganj or Face Consequences",d:"Wolfland demands handover of the mineral-rich area by the end of the month; Government calls the note “unacceptable and unlawful”.",img:"p1",cap:"Emergency session of the National Security Council, held late Sunday night.",
+   b:["GREENLAND, 4 Oct — Wolfland has formally served an ultimatum on the Greenland Government, demanding that the Habiganj area, a mineral-rich belt along the 84 northing, be ceded by the end of October or face what its note describes as “consequences of a military nature”.","The note, delivered to the Foreign Ministry by a Wolfland chargé d’affaires shortly after nightfall, renews a claim of ownership that Greenland has rejected since the partition of the two countries. Foreign Minister Elin Marek said the demand was “an attempt to settle by threat what has been refused by law”.","Prime Minister Arvid Kessler chaired a late-night session of the National Security Council. A statement afterwards said Greenland remains committed to dialogue but “will not negotiate under the shadow of a deadline”. The Government has asked the United Nations to take note of the ultimatum."]},
+  {k:"Border",h:"Ultimatum Issued Over Habiganj; Capital on Alert",d:"Wolfland gives Greenland until October’s end to cede the disputed mining belt.",img:"p1",cap:"Delegates at the emergency council session.",
+   b:["GREENLAND, 4 Oct — Wolfland has issued a written ultimatum to the Greenland Government over Habiganj, the mineral-rich area that has remained a point of friction since the partition.","Foreign Minister Elin Marek rejected the demand, saying it “has no standing in law or history”. Officials said the Government had been warned of a hardening Wolfland position after recent skirmishes involving the Wolfland Border Guards (WLBG).","The Prime Minister’s office said the armed forces have been told to maintain readiness in their areas of responsibility, but no mobilisation has been ordered."]}],
+ sec:[
+  {k:"Defence",h:"Armed Forces Told to Stay Ready, Not Alarmed",t:"The Defence Ministry said Greenland forces remain organised in line with the Army’s standing tactical doctrine and will respond only if the border is crossed.",img:"p4",cap:"Border guards on a ridge watch, early Sunday."},
+  {k:"Economy",h:"Mining Shares Slide as Habiganj Fears Grow",t:"Investors pulled out of mining stocks within minutes of the ultimatum becoming public. Analysts said the area’s mineral deposits are central to export plans for the decade.",img:"p2",cap:"Habiganj open-pit workings, file."},
+  {k:"UN",h:"Government Asks United Nations to Intervene",t:"A letter to the Secretary-General calls Wolfland’s note “a clear threat of force” and urges the Security Council to meet before the deadline expires.",img:null},
+  {k:"Analysis",h:"Why Habiganj? The Ground Beneath the Dispute",t:"Surveys put the area among the richest mineral reserves in the region. Both sides have long claimed it; only one has tried to take it with a deadline.",img:null},
+  {k:"Border Watch",h:"Skirmishes Along the Line Raised Alarm for Weeks",t:"Local officials say Border Guard patrols from the other side have grown bolder since the summer, with at least three reported exchanges of fire.",img:null},
+  {k:"Politics",h:"Opposition Backs Government, Urges Calm",t:"Leaders of all major parties said they stand behind the Government’s rejection of the ultimatum and called on citizens to avoid panic buying.",img:null},
+  {k:"Markets",h:"Fuel Prices Climb as Border Traffic Slows",t:"Truckers say checks on the northern highway have doubled. Fuel retailers expect rationing if tensions persist.",img:null},
+  {k:"Voices",h:"“We Have Always Lived Here,” Say Habiganj Villagers",t:"In the villages around the mine, families said they would not leave, whatever the capitals decide.",img:null}],
+ brief:"Briefs · Schools in border districts will hold normal classes this week. · Airspace over the northern region remains open to civil traffic. · The Foreign Ministry will brief ambassadors on Tuesday."},
+
+{no:"Vol. CXII · No. 290",date:"Wednesday, 14 October 2026",weather:"Low cloud over the northern ridge · Cold, clear nights",
+ lead:[
+  {k:"Crisis",h:"Wolfland Mobilises Forces Along Border; Greenland Stands Firm",d:"Troop columns reported moving up to the Habiganj line as officials say Wolfland has ordered deployment in its area of responsibility.",img:"p3",cap:"A Wolfland convoy moving toward the border, seen from a hillside on Tuesday.",
+   b:["GREENLAND, 13 Oct — Wolfland has begun moving its forces along the border up to the Habiganj area, Greenland officials said on Tuesday, in what the Government called “a deliberate step to prepare the ground for the use of force”.","Villagers on the border road described convoys of trucks and armoured vehicles moving through the night. Greenland’s Armed Forces (GLAF) have been placed on heightened alert and units are taking up positions in line with their own tactical plans, said a Defence Ministry spokesman.","Prime Minister Kessler told Parliament that Greenland “has exhausted peaceful avenues but has not closed them”, noting that earlier diplomatic efforts, including a complaint to the United Nations, had produced no change in Wolfland’s position. “If the other side intends to use hard power, it will find a nation that is ready,” he said.","Wolfland’s state media said the movements were “defensive exercises” and accused Greenland of “provocations”. Greenland rejected the claim."]},
+  {k:"Border",h:"Columns Roll Toward the Line as Habiganj Tension Peaks",d:"Greenland says Wolfland has ordered deployment in its respective area of responsibility.",img:"p3",cap:"Vehicles on the northern highway.",
+   b:["GREENLAND, 13 Oct — Greenland officials say Wolfland has begun a large-scale movement of forces toward the border, to a point from which it could capture the Habiganj area.","Intelligence briefings cited by the Defence Ministry suggest Wolfland holds numerical superiority and the capacity to move quickly. Greenland, for its part, says its forces are organised and ready.","The Prime Minister’s office said the Government remains open to talks, but only on the basis of existing borders."]}],
+ sec:[
+  {k:"Defence",h:"GLAF On Alert; Units Move to Assigned Areas",t:"Greenland’s forces have deployed to positions in line with existing tactical plans. Officials declined to give numbers but said air and ground units are at readiness.",img:"p4",cap:"Greenland border guards on watch."},
+  {k:"Air",h:"Wolfland’s Edge in the Air Worries Analysts",t:"Wolfland’s air force is said to hold superiority. Greenland analysts note, however, that terrain and range limit what it can do over the contested ridge.",img:"p7",cap:"Helicopters over the northern hills, Tuesday."},
+  {k:"Government",h:"Spokesman: “We Seek Peace, But Not at Any Price”",t:"Government spokesman Tobias Hallin said Greenland’s patience has limits and that any attempt to cross the line “will be answered”.",img:"p6",cap:"Government spokesman Tobias Hallin."},
+  {k:"UN",h:"Security Council Urged to Act Before Deadline",t:"Diplomats said consultations were under way in New York, but no meeting has been scheduled. Greenland’s envoy called for an immediate session.",img:null},
+  {k:"Society",h:"Border Districts Brace; Families Head South",t:"Local authorities opened reception centres in three towns. Schools near the line have closed until further notice.",img:"p5",cap:"Residents leaving a border town."},
+  {k:"Economy",h:"Banks Cap Withdrawals as Nervous Savers Queue",t:"The central bank said reserves are sufficient and urged calm. Shops report heavy buying of canned food and fuel.",img:null},
+  {k:"Analysis",h:"Numbers Favour Wolfland, Ground Favours Greenland",t:"Military observers say the ratio on paper is three to one, but narrow roads and the Habiganj ridges limit how fast any force can move.",img:null},
+  {k:"Voices",h:"“We Will Not Leave,” Say Mine Workers",t:"Workers at Habiganj said they will remain on site despite warnings, saying the area is theirs.",img:null}],
+ brief:"Briefs · Civil flights over the northern region are rerouted. · Blood donation drive begins at provincial hospitals. · Parliament sits in extended session on Thursday."},
+
+{no:"Vol. CXII · No. 307",date:"Saturday, 31 October 2026",weather:"Overcast · Tense calm across the northern line",
+ lead:[
+  {k:"Deadline",h:"Deadline Passes: Greenland Holds Line as Wolfland Forces Mass at Habiganj",d:"No concession, no shots, but no peace. The Government says it will not cede “one hectare” of Habiganj.",img:"p5",cap:"Families queue for transport away from the border region on Friday.",
+   b:["GREENLAND, 31 Oct — The deadline set by Wolfland for the handover of Habiganj expired at midnight with no concession from the Greenland Government, no announcement from the other side, and thousands of troops facing each other across the line.","Prime Minister Kessler, in a televised address, said Greenland “will not cede one hectare” and that its forces are ready to defend every inch of the country. He thanked citizens for their composure and urged them to follow instructions from local authorities.","Wolfland’s forces have not crossed the border, but officials said they remain deployed in strength. The UN Secretary-General’s office said it was “deeply concerned” and called on both sides to step back.","Across the north, families have left for safer districts, while many in the capital gathered in public squares through the evening to watch the Prime Minister’s address."]},
+  {k:"Crisis",h:"Midnight Passes Over Habiganj; Armies Face to Face",d:"Greenland says it will defend every inch; Wolfland silent as the ultimatum lapses.",img:"p8",cap:"Citizens in the capital’s main square watch the Prime Minister’s address.",
+   b:["GREENLAND, 31 Oct — The ultimatum issued by Wolfland over Habiganj expired overnight. Greenland did not yield; the other side did not move.","The Prime Minister’s address, watched by crowds in squares across the country, vowed to defend the nation’s territory. Opposition leaders pledged unity.","Diplomats said the next 48 hours will be decisive. The UN says it is working for a “last-minute off-ramp”."]}],
+ sec:[
+  {k:"Defence",h:"GLAF at Full Readiness; Reserves Called Up",t:"The Defence Ministry confirmed that reserves have been called to their units. Greenland says it has the means to defend the line.",img:"p7",cap:"Helicopter patrol over the northern ridge."},
+  {k:"UN",h:"Security Council Meets Behind Closed Doors",t:"The council held an emergency session late Friday. Diplomats said members were divided over the wording of any statement.",img:"p1",cap:"Delegates arrive for the emergency session."},
+  {k:"Government",h:"Spokesman: “The Country Is Ready”",t:"Spokesman Tobias Hallin said Greenland stands united and that “every option remains on the table” if Wolfland crosses the line.",img:"p6",cap:"Tobias Hallin, Government spokesman."},
+  {k:"Border Watch",h:"Quiet on the Ridge, but No One Sleeps",t:"Patrols on both sides remain close. Residents said they heard distant engines through the night but no firing.",img:"p4",cap:"Border post, before dawn."},
+  {k:"Economy",h:"Mine Operations Halted; Exports Frozen",t:"Operators in Habiganj suspended work, citing safety. Export contracts are under review.",img:"p2",cap:"Idle machinery at the Habiganj mine."},
+  {k:"Society",h:"Shelters Open; Hospitals on Emergency Footing",t:"Authorities say supplies are adequate. Volunteers are working through the night to receive displaced families.",img:null},
+  {k:"Analysis",h:"What Happens Next? Three Paths From the Line",t:"Experts see a negotiated pause, a prolonged standoff, or escalation. All say time is short.",img:null},
+  {k:"Voices",h:"“Let Us Live Without Fear,” Plead Residents",t:"In a border town, a schoolteacher said the deadline felt “like a clock above every house”.",img:null}],
+ brief:"Briefs · Curfew in force in border districts from 10 pm. · Emergency helplines open round the clock. · Next edition: Monday."}
+];
+
+// extra detail: appended to each secondary story (same order as the sec arrays) and to each lead
+const X=[
+ ["Sources close to the ministry said the posture applies across all three commands and that leave in border units has been quietly reviewed. Commanders were reminded that rules of engagement are unchanged: fire only in response to fire. A senior officer added that coordination with the border police, customs and local councils has been tightened, and that liaison posts are now staffed around the clock.",
+  "Within an hour of the opening bell, the mining index fell by almost nine per cent, its sharpest one-day drop in a decade, before a partial recovery. Several foreign firms with licences in the Habiganj belt asked the Government for written security assurances. A trade body warned that any prolonged closure could cost the country a significant share of its annual export earnings.",
+  "The letter, signed by the Foreign Minister, recalls earlier appeals to the world body and asks that observers be sent to the border before the deadline. It argues that the ultimatum breaches the principle that territorial disputes must be settled peacefully. Several friendly governments have already been briefed and are expected to speak in support of Greenland’s position.",
+  "Geologists say the belt holds deposits of minerals now in demand across the world’s technology industries, and that the ridge lines make extraction easier on the Greenland side of the line. Historians note that the partition left the area’s status vague, with maps from both capitals showing different boundaries. Neither side has allowed an independent survey.",
+  "A tally compiled by provincial officials counts three exchanges of fire since July, none with confirmed casualties. In the most recent incident, a Greenland patrol reported warning shots from a Wolfland Border Guard post after drifting near an unmarked stream crossing. Local leaders say these small incidents were used to build a case for the present demand.",
+  "The leader of the opposition said the moment “is bigger than party”, and offered to join an all-party committee on security. Union leaders pledged to keep essential services running. The Prime Minister welcomed the offers and said a cross-party briefing would be held on Wednesday.",
+  "Hauliers report waiting times at the northern checkpoints of up to four hours, up from forty minutes last month. Supermarket chains say they will limit sales of some staples per customer as a precaution. The Trade Ministry said stocks of fuel and grain are enough for several months and asked the public not to hoard.",
+  "Many families in the area trace their roots there back several generations and run small farms and shops that supply the mine. One resident, who asked not to be named, said children have been taught to shelter at the first siren. The village council voted unanimously to stay put."],
+ ["Reserve units in two provinces have been told to confirm their addresses and contact numbers, a routine step before any call-up. Engineers have been seen strengthening bridges and clearing approaches on the northern highway. The Army chief visited forward positions on Tuesday and told troops that discipline and patience would decide the coming days.",
+  "Wolfland is believed to hold a clear edge in combat aircraft and helicopters, which Greenland analysts put at roughly three to one. Greenland’s own air arm, they note, can still lift a limited force by helicopter, but only about one company at a time across the contested area. Air defence cover for the northern towns has been quietly increased.",
+  "Mr Hallin said the Government had spent months in talks with Wolfland through every available channel and that all had been met with refusal. He rejected Wolfland’s label of “provocation” for Greenland’s deployments, calling them “the minimum a state owes its citizens”. Asked about the ultimatum, he said no one in Government had ever considered handing over territory.",
+  "Diplomats say two permanent members remain reluctant to commit to a formal statement. Greenland’s envoy briefed delegations on the border movements and handed over satellite images. A spokesperson for the Secretary-General said a special envoy is “ready to travel at short notice” if both sides agree.",
+  "Buses were laid on to the south, and some families chose to travel by private car and on foot. Volunteers handed out blankets, water and hot food at the reception centres, and a hotline for separated relatives was set up. Local doctors said they were preparing for a rise in anxiety-related cases among the elderly.",
+  "Queues formed outside several branches in the capital and the northern towns on Tuesday afternoon. The central bank limited cash withdrawals per account to prevent a run, and said the limit would be lifted as soon as conditions allow. Shopkeepers say tinned goods, batteries and bottled water sold out in hours.",
+  "A retired general said Greenland’s advantages lie in short supply lines, prepared defensive positions and knowledge of the land. He cautioned that numbers matter, and that a quick strike could still force hard choices. The best deterrent, he argued, is a force visibly ready and a government visibly united.",
+  "A foreman who has worked at the mine for twenty years said production has continued under armed escort. “We dig, we go home, we watch the hills,” he said. Management has offered paid leave to any worker who wishes to move his family, but few have accepted."],
+ ["Reservists reported to depots across the country on Friday, with the first units arriving at forward areas by the evening. Greenland’s air and ground commanders held a joint planning session at the Defence headquarters. Officials said readiness had been tested in a series of no-notice drills over the past fortnight.",
+  "Members traded sharp words over a draft statement calling on both sides to withdraw to positions held in September. Greenland’s envoy said his country would accept it immediately; Wolfland’s representative called it “one-sided”. A smaller group of members is working on a compromise text and hopes to table it on Monday.",
+  "Mr Hallin said the Government has contingency plans for evacuating border districts, protecting key infrastructure and maintaining supplies. He asked citizens to rely only on official channels for information and to ignore rumours. He declined to say whether any deadline had been set for Greenland’s own response.",
+  "Observers on the Greenland side report that Wolfland forces have dug in on the far ridge and added vehicles overnight. There was no firing, and flare lights lit the sky twice before midnight. Border guards on both sides were seen keeping a watch with binoculars from their posts at first light.",
+  "The suspension of work follows a decision by the major operators, who said staff safety could not be guaranteed. Industry bodies warn that long closures would hit suppliers and transport firms across the northern province. The Government said it will help affected workers with wages and housing.",
+  "Hospitals have moved to emergency rosters and cancelled non-urgent surgery, and blood banks report strong donations. Schools in the capital will serve as shelters if needed. Aid groups are positioning tents, water tanks and fuel at four sites away from the border.",
+  "The first, a negotiated pause under UN auspices, would require both sides to pull back from the ridge; the second, a long standoff, would strain both economies; the third, escalation, would put thousands at risk. Analysts agree that the next two days, as the diplomatic clock runs down, are the most dangerous.",
+  "She said her pupils ask each morning whether the soldiers have gone home. Her school remains closed, and she is teaching online from a relative’s house in the south. “We want to be allowed to be ordinary again,” she said."]
+];
+const LEADMORE=[
+ ["Background · The dispute traces to the partition of the two countries, when the line through the north was drawn in haste and the status of Habiganj was left unclear. Both capitals have since published maps showing the area as their own. Greenland’s Border Guards have patrolled there for decades, while Wolfland’s Border Guards (WLBG) have more recently pressed forward, and incidents have grown in number.",
+  "Reaction · Allied governments said they were following events closely. A European foreign ministry urged restraint on all sides. In Greenland’s towns, many shops posted the national colours in their windows as a gesture of solidarity.",
+  "What next · The Foreign Minister will brief the diplomatic corps on Tuesday, and Parliament will take up a motion on national security this week. The ultimatum runs until the end of October."],
+ ["Background · Earlier this month Greenland’s Government raised the issue at the United Nations, hoping that an international voice would restrain Wolfland. Diplomats on the ground say that avenue produced no change in Wolfland’s position, and that its leadership has since told its forces to take up positions in their own area of responsibility.",
+  "Reaction · Allied embassies urged both sides to avoid steps that might cause a clash by accident. Aid agencies said they were pre-positioning supplies in the south. Business groups asked for guidance on insurance and transport.",
+  "What next · The Defence Council will meet again on Thursday. The ultimatum expires on 31 October, and officials say the coming fortnight will be decisive."],
+ ["Background · The ultimatum, served on 4 October, demanded the handover of Habiganj by the end of the month. Greenland’s forces have since deployed in line with their tactical plans, while Wolfland, which is believed to hold numerical and air superiority, has massed its own along the border. Greenland’s forces can drop only about one company at a time across the contested area, officers say, which is why the defence relies on ground positions.",
+  "Reaction · Foreign governments called for “maximum restraint”, and several advised their citizens to leave the northern districts. Oil prices edged higher on the news. Church leaders in the capital held vigils.",
+  "What next · The Security Council will meet again on Monday. The Government has said it will address the nation again if the situation changes."]
+];
+const FACTS=[
+ [["Disputed area","Habiganj, mineral-rich, along the 84 northing"],["Deadline","31 October 2026"],["Issued by","Wolfland Government, 4 October"],["Greenland’s answer","Rejected; UN informed"]],
+ [["Wolfland posture","Forces moving up to the border"],["Greenland posture","GLAF on alert, in position"],["Force ratio (est.)","3 : 1 on paper"],["Air","Wolfland holds local superiority"]],
+ [["Deadline","Expired midnight, 31 Oct"],["Reserves","Called up"],["Curfew","10 pm in border districts"],["UN","Security Council meets Monday"]]
+];
+const TIMELINE=[
+ ["Jul–Sep · Three exchanges of fire reported on the line","4 Oct · Ultimatum served","5 Oct · Government rejects it","31 Oct · Deadline"],
+ ["4 Oct · Ultimatum served","8 Oct · UN complaint filed","13 Oct · Wolfland convoys move up","31 Oct · Deadline"],
+ ["4 Oct · Ultimatum served","13 Oct · Wolfland mobilises","30 Oct · Reserves called up","31 Oct · Deadline passes"]
+];
+const ED=[
+ ["A Deadline Is Not a Law","A state that sets a clock on another’s territory has already chosen its method. Greenland’s answer is the right one: calm, firm, and open to talk on lawful terms. The Government should keep the world informed, keep the border quiet, and keep faith with the people of Habiganj."],
+ ["Preparing Without Provoking","Readiness is not aggression. The country’s forces should hold the ground they know, avoid any step that gives the other side a pretext, and let the diplomats do the work they were trained for. The public’s part is to stay calm and to trust only official information."],
+ ["Steady Now","The deadline has passed and the line holds. The test of the next days is restraint under pressure. We urge both capitals to pull back from the ridge, accept outside help, and remember that no mineral is worth a war."]
+];
+PAPERS.forEach((P,i)=>{
+  P.sec.forEach((s,j)=>s.t+=" "+X[i][j]);
+  P.lead.forEach(l=>l.b.push(...LEADMORE[i]));
+  P.facts=FACTS[i];P.tl=TIMELINE[i];P.ed=ED[i];
+});
+
+const FILL=["p2","p7","p4"];
+const PULL=[["“We will not negotiate under the shadow of a deadline.”","Prime Minister Arvid Kessler"],["“If the other side intends to use hard power, it will find a nation that is ready.”","Prime Minister Arvid Kessler, to Parliament"],["“We will not cede one hectare. Every inch of this country will be defended.”","Prime Minister Arvid Kessler, televised address"]];
+const bar=document.getElementById("bar"),mount=document.getElementById("papers");
+let cur=0;
+const pick=(a,n)=>[...a].sort(()=>Math.random()-.5).slice(0,n);
+const fig=(i,c)=>i?`<figure><img src="img/${i}.jpg" alt=""><figcaption>${c}</figcaption></figure>`:"";
+
+function paper(P,i){
+  const L=P.lead[Math.floor(Math.random()*P.lead.length)];
+  const S=pick(P.sec,8);
+  return `<article class="sheet" id="p${i}">
+  <header class="mast"><h1>Greenland Times</h1>
+  <div class="dateline"><span>${P.no} · Price ৳ 10</span><span>${P.date}</span><span>${P.weather}</span></div></header>
+  <section class="lead"><div class="body">
+    <p class="kicker">${L.k}</p><h2>${L.h}</h2><p class="deck">${L.d}</p>
+    <p class="by">From our correspondents</p>${L.b.map(p=>`<p>${p}</p>`).join("")}</div>
+    <aside>${fig(L.img,L.cap)}<blockquote class="pull" style="margin-left:0;margin-right:0">${PULL[i][0]}<small>${PULL[i][1]}</small></blockquote><div class="box"><h4>At a Glance</h4>${P.facts.map(f=>`<p><b>${f[0]}</b><br>${f[1]}</p>`).join("")}</div><div class="box"><h4>Timeline</h4><ul>${P.tl.map(t=>`<li>${t}</li>`).join("")}</ul></div><figure class="fill"><img src="img/${FILL[i]}.jpg" alt=""></figure></aside></section>
+  <section class="cols">${S.map(s=>`<div class="story"><p class="kicker">${s.k}</p>${fig(s.img,s.cap)}<h3>${s.h}</h3><p>${s.t}</p></div>`).join("")}
+  <div class="box"><h4>Our View</h4><p><b>${P.ed[0]}</b></p><p>${P.ed[1]}</p></div>
+  </section>
+  <div class="brief"><b>In Brief</b> ${P.brief.replace(/^Briefs · /,"")}</div>
+  <footer class="foot">Greenland Times · Price: ৳ 10.00 (Taka) · Printed at the Capital Press</footer></article>`;
+}
+function render(){
+  mount.innerHTML=PAPERS.map(paper).join("");
+  mount.querySelectorAll(".sheet").forEach((e,i)=>{e.style.display=i===cur?"block":"none";e.classList.toggle("cur",i===cur)});
+  mount.querySelectorAll(".fill").forEach(f=>{if(f.offsetHeight<90)f.remove()});
+  bar.innerHTML=PAPERS.map((p,i)=>`<button class="${i===cur?"on":""}" data-i="${i}">Edition ${i+1} · ${p.date.split(", ")[1].replace(" 2026","")}</button>`).join("")
+   +`<button class="gen" data-g="1">Generate new issue</button><button data-pr="1">Print / PDF</button>`;
+}
+bar.onclick=e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.i)cur=+b.dataset.i;
+  if(b.dataset.pr){document.body.classList.add("single");print();document.body.classList.remove("single");return}
+  render();scrollTo(0,0)};
+render();
+</script>
+</body>
+</html>
