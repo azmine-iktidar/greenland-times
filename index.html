@@ -191,7 +191,7 @@ function render(){
   mount.querySelectorAll(".sheet").forEach((e,i)=>{e.style.display=i===cur?"block":"none";e.classList.toggle("cur",i===cur)});
   mount.querySelectorAll(".fill").forEach(f=>{if(f.offsetHeight<90)f.remove()});
   bar.innerHTML=PAPERS.map((p,i)=>`<button class="${i===cur?"on":""}" data-i="${i}">Edition ${i+1} · ${p.date.split(", ")[1].replace(" 2026","")}</button>`).join("")
-   +`<button class="gen" data-g="1">Generate new issue</button><button data-pr="1">Print / PDF</button>`;
+   +(location.search.includes("admin")?`<button class="gen" data-g="1">Generate new issue</button><button data-pr="1">Print / PDF</button>`:"");
 }
 bar.onclick=e=>{const b=e.target.closest("button");if(!b)return;
   if(b.dataset.i)cur=+b.dataset.i;
