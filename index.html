@@ -7,48 +7,119 @@
 <title>Greenland Times</title>
 <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#f3ecdc;--ink:#1a1612;--rule:#1a1612;--muted:#5a5043;--accent:#8a1c1c}
+:root{--paper:#f3ecdc;--ink:#1a1612;--rule:#1a1612;--muted:#5a5043;--accent:#8a1c1c;--soft:#b8ad96;--hdr:96px}
 *{box-sizing:border-box}
-body{margin:0;background:#cfc6b2;color:var(--ink);font-family:"Libre Baskerville",Georgia,serif}
-.bar{position:sticky;top:0;z-index:5;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;padding:10px 16px;background:#1a1612}
-.bar button{font:500 13px Oswald,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border:1px solid #f3ecdc;background:transparent;color:#f3ecdc;cursor:pointer}
-.bar button.on{background:#f3ecdc;color:#1a1612}
-.bar .gen{background:var(--accent);border-color:var(--accent)}
-.sheet{max-width:1100px;margin:20px auto;padding:28px 36px 36px;background:var(--paper);box-shadow:0 6px 30px rgba(0,0,0,.35)}
-.mast{text-align:center;border-bottom:4px double var(--rule);padding-bottom:10px}
-.mast h1{font:700 clamp(44px,9vw,92px)/1 UnifrakturCook,serif;margin:0;letter-spacing:.01em}
-.dateline{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:6px 2px;margin-top:8px;font:500 12px Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase}
-.lead{display:grid;grid-template-columns:1.6fr 1fr;gap:24px;padding:18px 0;border-bottom:2px solid var(--rule)}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Libre Baskerville",Georgia,serif;-webkit-text-size-adjust:100%}
+body.lock{overflow:hidden}
+button{font:inherit;color:inherit}
+/* header: static (sticky) on every screen size */
+.top{position:sticky;top:0;z-index:30;background:#1a1612;color:#f3ecdc;padding-top:env(safe-area-inset-top)}
+.row1{display:flex;align-items:center;justify-content:space-between;gap:4px;height:50px;padding:0 6px}
+.brand{font:700 28px/1 UnifrakturCook,serif;color:#f3ecdc;text-decoration:none;white-space:nowrap}
+.nav-btn{display:flex;align-items:center;gap:6px;min-width:44px;height:44px;padding:0 10px;background:transparent;border:0;cursor:pointer;font:500 12px Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:0 12px 10px;scrollbar-width:none;scroll-snap-type:x proximity}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:0 0 auto;min-height:40px;padding:0 14px;scroll-snap-align:start;font:500 12.5px Oswald,sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid #f3ecdc;background:transparent;cursor:pointer}
+.tabs button.on{background:#f3ecdc;color:#1a1612}
+.tabs .gen{background:var(--accent);border-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.top :focus-visible{outline-color:#f3ecdc}
+/* side bars: slide-in drawers on phones */
+.side{position:fixed;top:0;bottom:0;left:0;z-index:40;width:min(86vw,330px);overflow-y:auto;overscroll-behavior:contain;background:var(--paper);padding:calc(56px + env(safe-area-inset-top)) 16px 24px;transform:translateX(-102%);visibility:hidden;transition:transform .25s cubic-bezier(.2,.8,.2,1),visibility 0s .25s;box-shadow:0 0 30px rgba(0,0,0,.35)}
+.side.right{left:auto;right:0;transform:translateX(102%)}
+.side.open{transform:none;visibility:visible;transition-delay:0s}
+.scrim{position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.side h4,.box h4{font:700 12px Oswald,sans-serif;letter-spacing:.14em;text-transform:uppercase;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--rule)}
+.side h4:first-of-type{margin-top:0}
+.side .close{position:absolute;top:calc(6px + env(safe-area-inset-top));right:6px;width:44px;height:44px;background:transparent;border:0;font-size:26px;cursor:pointer}
+.side.right .close{left:6px;right:auto}
+.side ul{list-style:none;margin:0;padding:0}
+.side li a,.side li button{display:block;width:100%;min-height:44px;padding:10px 4px;text-align:left;background:transparent;border:0;border-bottom:1px solid #d6ccb6;font:14px/1.3 "Libre Baskerville",serif;color:var(--ink);text-decoration:none;cursor:pointer}
+.side li button.on{font-weight:700;color:var(--accent)}
+.side li small{display:block;font:500 11px Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.side p{font-size:13.5px;line-height:1.55;margin:0 0 10px}
+.side .tl li{padding:8px 0;border-bottom:1px solid #d6ccb6;font-size:13.5px;line-height:1.4}
+/* paper: one column on phones */
+.sheet{padding:16px 14px 28px}
+.mast{text-align:center;border-bottom:4px double var(--rule);padding-bottom:8px}
+.mast h1{font:700 clamp(40px,13vw,92px)/1 UnifrakturCook,serif;margin:0}
+.dateline{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:6px 2px;margin-top:8px;font:500 11px Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.lead{display:grid;grid-template-areas:"head" "fig" "text" "side";gap:12px;padding:16px 0;border-bottom:2px solid var(--rule)}
+.lead-head{grid-area:head}.lead-body{grid-area:text}.lead-right{display:contents}
+.lead-fig{grid-area:fig}.lead-side{grid-area:side}
 .kicker{font:700 12px Oswald,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
-.lead h2{font:700 clamp(30px,4.6vw,50px)/1.05 "Libre Baskerville",serif;margin:0 0 8px}
-.deck{font-style:italic;color:var(--muted);margin:0 0 10px;font-size:16px;line-height:1.4}
+.lead h2{font:700 clamp(28px,8vw,50px)/1.06 "Libre Baskerville",serif;margin:0 0 8px}
+.deck{font-style:italic;color:var(--muted);margin:0;font-size:16px;line-height:1.4}
 figure{margin:0}
-figure img{width:100%;display:block;filter:grayscale(.85) contrast(1.05) sepia(.15)}
-figcaption{font-size:11px;color:var(--muted);padding:4px 0;border-bottom:1px solid #b8ad96;line-height:1.35}
+figure img{width:100%;display:block;filter:grayscale(.85) contrast(1.05) sepia(.15);background:#d9cfb9;aspect-ratio:3/2;object-fit:cover}
+figcaption{font-size:12px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--soft);line-height:1.35}
 .by{font:500 11px Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
-.body p{margin:0 0 10px;font-size:14px;line-height:1.55;text-align:justify;hyphens:auto}
+.lead-body p{margin:0 0 12px;font-size:16px;line-height:1.6}
 .by+p::first-letter{font:700 52px/.8 "Libre Baskerville",serif;float:left;padding:4px 6px 0 0}
-.cols{column-count:3;column-gap:28px;column-rule:1px solid #b8ad96;padding-top:16px}
-.story{margin-bottom:20px}.story figure{break-inside:avoid}.story h3,.story .kicker{break-after:avoid}
-.story h3{font:700 20px/1.15 "Libre Baskerville",serif;margin:0 0 6px}
-.story p{margin:0;font-size:13px;line-height:1.5;text-align:justify}
-.story figure{margin-bottom:8px}
-.box{break-inside:avoid;border:1px solid var(--rule);padding:10px 12px;margin:0 0 20px;background:rgba(0,0,0,.035);font-size:12.5px;line-height:1.45}
-.box h4{font:700 12px Oswald,sans-serif;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px;border-bottom:1px solid var(--rule);padding-bottom:3px}
-.box p{margin:0 0 6px}.box ul{margin:0;padding-left:16px}
-.lead aside{display:flex;flex-direction:column}.fill{flex:1 1 0;min-height:0;position:relative;overflow:hidden;margin-top:6px}.fill img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.cols .box{break-inside:auto}
-.pull{font:italic 700 22px/1.25 "Libre Baskerville",serif;border-top:3px solid var(--rule);border-bottom:1px solid var(--rule);padding:10px 2px;margin:16px 0}
+.pull{margin:4px 0 14px;font:italic 700 21px/1.25 "Libre Baskerville",serif;border-top:3px solid var(--rule);border-bottom:1px solid var(--rule);padding:10px 2px}
 .pull small{display:block;font:500 11px Oswald,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-style:normal}
-.brief{border-top:2px solid var(--rule);padding-top:10px;margin-top:4px;font-size:12.5px;line-height:1.5}
-.brief b{font:700 12px Oswald,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin-right:6px}
+.box{break-inside:auto;border:1px solid var(--rule);padding:10px 12px;margin:0 0 16px;background:rgba(0,0,0,.035);font-size:14px;line-height:1.45}
+.box h4{margin:0 0 6px}
+.box p{margin:0 0 6px}
+.fill{display:none}
+.cols{padding-top:16px}
+.story{margin-bottom:22px;padding-bottom:20px;border-bottom:1px solid var(--soft);scroll-margin-top:calc(var(--hdr) + 8px)}
+.story figure{margin-bottom:8px;break-inside:avoid}
+.story h3{font:700 21px/1.15 "Libre Baskerville",serif;margin:0 0 6px;break-after:avoid}
+.story p{margin:0;font-size:15px;line-height:1.55}
+.story .kicker{break-after:avoid}
+.brief{border-top:2px solid var(--rule);padding-top:10px;margin-top:4px;font-size:14px;line-height:1.5}
+.brief b,.side .brief-t{font:700 12px Oswald,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin-right:6px}
 .foot{margin-top:14px;border-top:4px double var(--rule);padding-top:6px;text-align:center;font:500 11px Oswald,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-@media(max-width:800px){.sheet{padding:16px;margin:0}.lead{grid-template-columns:1fr}.cols{column-count:1}}
-@media print{body{background:#fff}.bar{display:none}.sheet{box-shadow:none;margin:0;max-width:none}.sheet+.sheet{break-before:page}body.single .sheet{display:none}body.single .sheet.cur{display:block}}
+/* tablet and up */
+@media(min-width:720px){
+  .sheet{padding:24px 28px 36px}
+  .lead{grid-template-columns:1.5fr 1fr;grid-template-areas:"head right" "text right";gap:0 24px;align-items:start}
+  .lead-right{display:flex;flex-direction:column;grid-area:right;align-self:stretch}
+  .lead-body p{font-size:14.5px;text-align:justify;hyphens:auto}
+  .fill{display:block;flex:1 1 0;min-height:0;position:relative;overflow:hidden;margin-top:6px}
+  .fill img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto}
+  .cols{column-count:2;column-gap:28px;column-rule:1px solid var(--soft)}
+  .story{margin-bottom:20px;padding-bottom:0;border-bottom:0}
+  .story p{font-size:13.5px;text-align:justify}
+  .box,.cols .box{break-inside:auto}
+}
+/* desktop: both side bars become permanent columns */
+@media(min-width:1100px){
+  .nav-btn{display:none}
+  .row1{justify-content:center}
+  .shell{display:grid;grid-template-columns:230px minmax(0,1fr) 270px;max-width:1500px;margin:0 auto}
+  .side,.side.right{position:sticky;top:var(--hdr);height:calc(100vh - var(--hdr));z-index:1;width:auto;transform:none;visibility:visible;box-shadow:none;background:transparent;padding:20px 16px;border-right:1px solid var(--soft)}
+  .side.right{border-right:0;border-left:1px solid var(--soft)}
+  .side .close,.scrim{display:none}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.side,.scrim{transition:none}}
+@media print{
+  .top,.side,.scrim{display:none!important}
+  .shell{display:block}
+  .sheet{padding:0}
+  body{background:#fff}
+}
 </style>
 </head>
 <body>
-<div class="bar" id="bar"></div>
-<div id="papers"></div>
+<header class="top" id="top">
+  <div class="row1">
+    <button class="nav-btn" id="mL" aria-controls="sideL" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>
+    <a class="brand" href="./">Greenland Times</a>
+    <button class="nav-btn" id="mR" aria-controls="sideR" aria-expanded="false"><span>Facts</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></button>
+  </div>
+  <nav class="tabs" id="bar" aria-label="Editions"></nav>
+</header>
+<div class="shell">
+  <aside class="side left" id="sideL" aria-label="Editions and contents"></aside>
+  <main id="papers"></main>
+  <aside class="side right" id="sideR" aria-label="Timeline and editorial"></aside>
+</div>
+<div class="scrim" id="scrim"></div>
 <script>
 // ponytail: all content is inline data; add stories to the pools, no build step
 const PAPERS=[
@@ -194,43 +265,76 @@ PAPERS.forEach((P,i)=>{
   P.lead.forEach(l=>l.b.push(...LEADMORE[i]));
   P.facts=FACTS[i];P.tl=TIMELINE[i];P.ed=ED[i];
 });
+// every story and lead gets its own photo; no photo is reused on another edition
+const IMGMAP=[
+ {lead:["p1",null],sec:{Defence:["p4","Border guards on a ridge watch, early Sunday."],Economy:["p2","Habiganj open-pit workings, file."]},fill:"p6"},
+ {lead:["p3",null],sec:{Defence:["p12","Troops strengthen a defensive position on the northern approach."],Air:["p7","Helicopters over the northern hills, Tuesday."],Government:["p13","Prime Minister Kessler addresses Parliament on Tuesday."],Society:["p5","Residents leaving a border town."]},fill:"p14"},
+ {lead:["p10","Villagers receive first aid at a school yard near Songbadpur on Thursday."],sec:{Air:["p11","Villagers watch an aircraft cross the border on Tuesday."],Economy:["p9","Stranded vehicles at the border gate."],Defence:["p15","The Army Chief with commanders at a forward position on Thursday."],Intelligence:["p16","Observers watch the far ridge from the Greenland side."]},fill:"p17"},
+ {lead:["p8","Citizens in the capital’s main square watch the Prime Minister’s address."],sec:{Defence:["p18","Reservists report to a depot on Friday."],UN:["p19","Delegates arrive for the emergency session."],Government:["p20","The Prime Minister addresses the nation on television."],"Border Watch":["p21","A border post at night, floodlights on the ridge."],Economy:["p22","Idle machinery at the mine."]},fill:"p23"}];
+PAPERS.forEach((P,i)=>{const m=IMGMAP[i];
+  P.lead.forEach(l=>{l.img=m.lead[0];if(m.lead[1])l.cap=m.lead[1]});
+  P.sec.forEach(s=>{const v=m.sec[s.k];s.img=v?v[0]:null;s.cap=v?v[1]:""});
+});
+const FILL=IMGMAP.map(m=>m.fill);
+const PULL=[["“We will not negotiate under the shadow of a deadline.”","Prime Minister Arvid Kessler"],["“If the other side intends to use hard power, it will find a nation that is ready.”","Prime Minister Arvid Kessler, to Parliament"],["“Firing on unarmed villagers is a crime, not a border incident.”","Foreign Minister Elin Marek"],["“We will not cede one hectare. Every inch of this country will be defended.”","Prime Minister Arvid Kessler, televised address"]];
 
-const FILL=["p2","p7","p4"];
-const PULL=[["“We will not negotiate under the shadow of a deadline.”","Prime Minister Arvid Kessler"],["“If the other side intends to use hard power, it will find a nation that is ready.”","Prime Minister Arvid Kessler, to Parliament"],["“We will not cede one hectare. Every inch of this country will be defended.”","Prime Minister Arvid Kessler, televised address"]];
-FILL.splice(2,0,"p8");
-PULL.splice(2,0,["“Firing on unarmed villagers is a crime, not a border incident.”","Foreign Minister Elin Marek"]);
-const bar=document.getElementById("bar"),mount=document.getElementById("papers");
+const $=id=>document.getElementById(id);
+const bar=$("bar"),mount=$("papers"),sideL=$("sideL"),sideR=$("sideR"),scrim=$("scrim"),top_=$("top");
 let cur=PAPERS.length-1; // open on the latest edition
 const pick=(a,n)=>[...a].sort(()=>Math.random()-.5).slice(0,n);
-const fig=(i,c)=>i?`<figure><img src="img/${i}.jpg" alt=""><figcaption>${c}</figcaption></figure>`:"";
+const fig=(i,c)=>i?`<figure><img src="img/${i}.jpg" alt="" loading="lazy"><figcaption>${c}</figcaption></figure>`:"";
+const short=d=>{const [day,mon]=d.split(", ")[1].split(" ");return day+" "+mon.slice(0,3)};
+const close=`<button class="close" data-close="1" aria-label="Close">×</button>`;
 
-function paper(P,i){
-  const L=P.lead[Math.floor(Math.random()*P.lead.length)];
-  const S=pick(P.sec,8);
-  return `<article class="sheet" id="p${i}">
+function build(i){
+  const P=PAPERS[i],L=P.lead[Math.floor(Math.random()*P.lead.length)],S=pick(P.sec,8);
+  mount.innerHTML=`<article class="sheet">
   <header class="mast"><h1>Greenland Times</h1>
   <div class="dateline"><span>${P.no} · Price ৳ 10</span><span>${P.date}</span><span>${P.weather}</span></div></header>
-  <section class="lead"><div class="body">
-    <p class="kicker">${L.k}</p><h2>${L.h}</h2><p class="deck">${L.d}</p>
-    <p class="by">From our correspondents</p>${L.b.map(p=>`<p>${p}</p>`).join("")}</div>
-    <aside>${fig(L.img,L.cap)}<blockquote class="pull" style="margin-left:0;margin-right:0">${PULL[i][0]}<small>${PULL[i][1]}</small></blockquote><div class="box"><h4>At a Glance</h4>${P.facts.map(f=>`<p><b>${f[0]}</b><br>${f[1]}</p>`).join("")}</div><div class="box"><h4>Timeline</h4><ul>${P.tl.map(t=>`<li>${t}</li>`).join("")}</ul></div><figure class="fill"><img src="img/${FILL[i]}.jpg" alt=""></figure></aside></section>
-  <section class="cols">${S.map(s=>`<div class="story"><p class="kicker">${s.k}</p>${fig(s.img,s.cap)}<h3>${s.h}</h3><p>${s.t}</p></div>`).join("")}
-  <div class="box"><h4>Our View</h4><p><b>${P.ed[0]}</b></p><p>${P.ed[1]}</p></div>
+  <section class="lead" id="s0">
+    <div class="lead-head"><p class="kicker">${L.k}</p><h2>${L.h}</h2><p class="deck">${L.d}</p></div>
+    <div class="lead-right">
+      <div class="lead-fig">${fig(L.img,L.cap)}</div>
+      <div class="lead-side"><blockquote class="pull">${PULL[i][0]}<small>${PULL[i][1]}</small></blockquote>
+        <div class="box"><h4>At a Glance</h4>${P.facts.map(f=>`<p><b>${f[0]}</b><br>${f[1]}</p>`).join("")}</div>
+        <figure class="fill"><img src="img/${FILL[i]}.jpg" alt=""></figure></div>
+    </div>
+    <div class="lead-body"><p class="by">From our correspondents</p>${L.b.map(p=>`<p>${p}</p>`).join("")}</div>
   </section>
-  <div class="brief"><b>In Brief</b> ${P.brief.replace(/^Briefs · /,"")}</div>
+  <section class="cols">${S.map((s,j)=>`<div class="story" id="s${j+1}"><p class="kicker">${s.k}</p>${fig(s.img,s.cap)}<h3>${s.h}</h3><p>${s.t}</p></div>`).join("")}</section>
   <footer class="foot">Greenland Times · Price: ৳ 10.00 (Taka) · Printed at the Capital Press</footer></article>`;
+  sideL.innerHTML=close+`<h4>Editions</h4><ul>${PAPERS.map((p,k)=>`<li><button data-i="${k}" class="${k===i?"on":""}"><small>Edition ${k+1}${k===PAPERS.length-1?" · Latest":""}</small>${p.date}</button></li>`).join("")}</ul>
+    <h4>In this issue</h4><ul><li><a href="#s0"><small>${L.k}</small>${L.h}</a></li>${S.map((s,j)=>`<li><a href="#s${j+1}"><small>${s.k}</small>${s.h}</a></li>`).join("")}</ul>`;
+  sideR.innerHTML=close+`<h4>Timeline</h4><ul class="tl">${P.tl.map(t=>`<li>${t}</li>`).join("")}</ul>
+    <h4>Our View</h4><p><b>${P.ed[0]}</b></p><p>${P.ed[1]}</p>
+    <h4>In Brief</h4><p>${P.brief.replace(/^Briefs · /,"").split(" · ").join("</p><p>")}</p>`;
 }
 function render(){
-  mount.innerHTML=PAPERS.map(paper).join("");
-  mount.querySelectorAll(".sheet").forEach((e,i)=>{e.style.display=i===cur?"block":"none";e.classList.toggle("cur",i===cur)});
-  mount.querySelectorAll(".fill").forEach(f=>{if(f.offsetHeight<90)f.remove()});
-  bar.innerHTML=PAPERS.map((p,i)=>`<button class="${i===cur?"on":""}" data-i="${i}">Edition ${i+1} · ${p.date.split(", ")[1].replace(" 2026","")}</button>`).join("")
+  build(cur);
+  if(matchMedia("(min-width:720px)").matches)mount.querySelectorAll(".fill").forEach(f=>{if(f.offsetHeight<90)f.remove()});
+  bar.innerHTML=PAPERS.map((p,i)=>`<button class="${i===cur?"on":""}" data-i="${i}" ${i===cur?'aria-current="true"':""}>Ed ${i+1} · ${short(p.date)}</button>`).join("")
    +(location.search.includes("admin")?`<button class="gen" data-g="1">Generate new issue</button><button data-pr="1">Print / PDF</button>`:"");
+  document.documentElement.style.setProperty("--hdr",top_.offsetHeight+"px");
+  bar.querySelector(".on")?.scrollIntoView({inline:"center",block:"nearest"});
 }
-bar.onclick=e=>{const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.i)cur=+b.dataset.i;
-  if(b.dataset.pr){document.body.classList.add("single");print();document.body.classList.remove("single");return}
-  render();scrollTo(0,0)};
+// drawers (phones/tablets); permanent columns on desktop
+let opener=null;
+const drawers={mL:sideL,mR:sideR};
+function closeDrawers(){[sideL,sideR].forEach(s=>s.classList.remove("open"));scrim.classList.remove("on");document.body.classList.remove("lock");
+  ["mL","mR"].forEach(id=>$(id).setAttribute("aria-expanded","false"));opener?.focus();opener=null}
+function openDrawer(btn){const s=drawers[btn.id];closeDrawers();opener=btn;s.classList.add("open");scrim.classList.add("on");document.body.classList.add("lock");btn.setAttribute("aria-expanded","true");s.querySelector("button,a")?.focus()}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button,a");if(!b)return;
+  if(b.id==="mL"||b.id==="mR"){openDrawer(b);return}
+  if(b.dataset.close){closeDrawers();return}
+  if(b.dataset.i!==undefined){cur=+b.dataset.i;opener=null;closeDrawers();render();scrollTo(0,0);return}
+  if(b.dataset.g){render();scrollTo(0,0);return}
+  if(b.dataset.pr){print();return}
+  if(b.tagName==="A"&&b.getAttribute("href")?.startsWith("#")){opener=null;closeDrawers()}
+});
+scrim.onclick=closeDrawers;
+addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawers()});
+addEventListener("resize",()=>document.documentElement.style.setProperty("--hdr",top_.offsetHeight+"px"));
 render();
 </script>
 </body>
